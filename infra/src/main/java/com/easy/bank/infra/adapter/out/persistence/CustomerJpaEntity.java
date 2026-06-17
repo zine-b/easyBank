@@ -27,6 +27,9 @@ public class CustomerJpaEntity {
     @Column
     private String phone;
 
+    @Column
+    private String passwordHash;
+
     @Column(nullable = false)
     private Instant createdAt;
 
@@ -34,12 +37,13 @@ public class CustomerJpaEntity {
 
     }
 
-    public CustomerJpaEntity(UUID id, String firstName, String lastName, String email, String phone, Instant createdAt) {
+    public CustomerJpaEntity(UUID id, String firstName, String lastName, String email, String phone, String passwordHash, Instant createdAt) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.phone = phone;
+        this.passwordHash = passwordHash;
         this.createdAt = createdAt;
     }
 
@@ -89,5 +93,13 @@ public class CustomerJpaEntity {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 }

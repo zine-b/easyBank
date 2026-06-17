@@ -9,6 +9,7 @@ public record Customer(
         String lastName,
         String email,
         String phone,
+        String passwordHash,
         Instant createdAt
 ) {
 }

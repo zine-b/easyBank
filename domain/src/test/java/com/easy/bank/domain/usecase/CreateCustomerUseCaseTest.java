@@ -14,7 +14,24 @@ class CreateCustomerUseCaseTest {
 
     @Test
     void createCustomer() {
-        CustomerRepositoryPort port = new CustomerRepositoryPort() {
+        CustomerRepositoryPort customerRepositoryPort = getCustomerRepositoryPort();
+        CreateCustomerUseCase createCustomerUseCase = new CreateCustomerUseCase(customerRepositoryPort);
+
+        CreateCustomerCommand command = new CreateCustomerCommand(
+                "firstname",
+                "",
+                "",
+                "",
+                "65afe100509a66f663f37114114d6d98a39623e9d14c66eb5a29ffd317fd858c"
+        );
+        Customer customer = createCustomerUseCase.createCustomer(command);
+
+        Assertions.assertEquals("firstname", customer.firstName());
+        Assertions.assertEquals("65afe100509a66f663f37114114d6d98a39623e9d14c66eb5a29ffd317fd858c", customer.passwordHash());
+    }
+
+    private static CustomerRepositoryPort getCustomerRepositoryPort() {
+        return new CustomerRepositoryPort() {
             @Override
             public Optional<Customer> findById(CustomerId id) {
                 return Optional.empty();
@@ -30,16 +47,5 @@ class CreateCustomerUseCaseTest {
                 return customer;
             }
         };
-        CreateCustomerUseCase createCustomerUseCase = new CreateCustomerUseCase(port);
-
-        CreateCustomerCommand command = new CreateCustomerCommand(
-                "firstname",
-                "",
-                "",
-                ""
-        );
-        Customer customer = createCustomerUseCase.createCustomer(command);
-
-        Assertions.assertEquals("firstname", customer.firstName());
     }
 }
