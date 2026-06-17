@@ -28,6 +28,7 @@ public class CreateCustomerUseCase {
                 command.lastName(),
                 command.email(),
                 command.phone(),
+                command.passwordHash(),
                 Instant.now()
         );
 

@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-
 @RestController
 @RequestMapping("/api/v1/customers")
 @Tag(name = "Customers", description = "Création et gestion des clients easyBank")
@@ -52,7 +50,8 @@ public class CustomerController {
                 request.firstName(),
                 request.lastName(),
                 request.email(),
-                request.phone()
+                request.phone(),
+                request.passwordHash()
         ));
         return ResponseEntity
                 .status(201).body(CustomerResponse.from(customer));

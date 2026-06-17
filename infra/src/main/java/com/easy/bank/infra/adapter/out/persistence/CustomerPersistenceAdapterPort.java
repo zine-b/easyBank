@@ -38,6 +38,7 @@ class CustomerPersistenceAdapterPort implements CustomerRepositoryPort {
                 entity.getLastName(),
                 entity.getEmail(),
                 entity.getPhone(),
+                entity.getPasswordHash(),
                 entity.getCreatedAt()
         );
     }
@@ -49,6 +50,7 @@ class CustomerPersistenceAdapterPort implements CustomerRepositoryPort {
                 customer.lastName(),
                 customer.email(),
                 customer.phone(),
+                customer.passwordHash(),
                 customer.createdAt()
         );
     }
