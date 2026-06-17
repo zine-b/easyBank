@@ -23,12 +23,12 @@ ni titres). Les montants sont en **EUR**.
 
 Format ISO 9362 (8 ou 11 caractères) : `BBBB` (banque) + `CC` (pays) + `LL` (localité) + `BBB` (agence, optionnel).
 
-| Élément | Valeur | Signification |
-|---|---|---|
-| Code banque | `EASY` | easyBank |
-| Pays | `FR` | France |
-| Localité | `PP` | Paris |
-| Agence | `XXX` | Siège (principal) |
+| Élément     | Valeur | Signification     |
+|-------------|--------|-------------------|
+| Code banque | `EASY` | easyBank          |
+| Pays        | `FR`   | France            |
+| Localité    | `PP`   | Paris             |
+| Agence      | `XXX`  | Siège (principal) |
 
 > **BIC easyBank : `EASYFRPP`** (forme courte) / **`EASYFRPPXXX`** (forme longue).
 
@@ -44,12 +44,12 @@ FR  kk   BBBBB   GGGGG   CCCCCCCCCCC   KK
 └─ Code pays (ISO 3166)
 ```
 
-| Champ | Longueur | Valeur easyBank (fictive) |
-|---|---|---|
-| Code banque | 5 | `30100` |
-| Code guichet | 5 | `00001` |
-| N° de compte | 11 | généré par compte |
-| Clé RIB | 2 | calculée (cf. §11.1) |
+| Champ        | Longueur | Valeur easyBank (fictive) |
+|--------------|----------|---------------------------|
+| Code banque  | 5        | `30100`                   |
+| Code guichet | 5        | `00001`                   |
+| N° de compte | 11       | généré par compte         |
+| Clé RIB      | 2        | calculée (cf. §11.1)      |
 
 > **Exemple d'IBAN valide** (vérifié MOD 97 = 1) :
 > `FR76 3010 0000 0100 0123 4567 822`
@@ -62,14 +62,14 @@ FR  kk   BBBBB   GGGGG   CCCCCCCCCCC   KK
 
 Tous les identifiants techniques sont des **UUID v4** (opaques, non devinables, générés côté serveur).
 
-| Entité | ID technique | Identifiant métier |
-|---|---|---|
-| Customer (client) | `customerId` : UUID | e‑mail unique |
-| Account (compte courant) | `accountId` : UUID | IBAN |
+| Entité                     | ID technique           | Identifiant métier   |
+|----------------------------|------------------------|----------------------|
+| Customer (client)          | `customerId` : UUID    | e‑mail unique        |
+| Account (compte courant)   | `accountId` : UUID     | IBAN                 |
 | Beneficiary (bénéficiaire) | `beneficiaryId` : UUID | IBAN du bénéficiaire |
-| Card (carte) | `cardId` : UUID | PAN masqué |
-| Transfer (virement) | `transferId` : UUID | — |
-| Statement (relevé) | `statementId` : UUID | mois (AAAA‑MM) |
+| Card (carte)               | `cardId` : UUID        | PAN masqué           |
+| Transfer (virement)        | `transferId` : UUID    | —                    |
+| Statement (relevé)         | `statementId` : UUID   | mois (AAAA‑MM)       |
 
 > ⚠️ L'UUID identifie la ressource techniquement ; l'**IBAN** reste l'identifiant
 > métier exposé au client. On ne fait jamais de virement « vers un UUID » mais vers un IBAN.
@@ -78,14 +78,14 @@ Tous les identifiants techniques sont des **UUID v4** (opaques, non devinables, 
 
 ## 4. Offres
 
-| Caractéristique | Offre **EASY** | Offre **PREMIUM** |
-|---|---|---|
-| Cotisation | Gratuite | Payante (mensuelle) |
-| Carte | Visa Classic — débit | Visa Premier — débit |
-| Plafond paiement / 30 j | 2 000 € | 10 000 € |
-| Plafond retrait / 7 j | 500 € | 2 000 € |
-| Plafond virement / opération | 5 000 € | 50 000 € |
-| Assurances / assistance | Non | Oui |
+| Caractéristique              | Offre **EASY**       | Offre **PREMIUM**    |
+|------------------------------|----------------------|----------------------|
+| Cotisation                   | Gratuite             | Payante (mensuelle)  |
+| Carte                        | Visa Classic — débit | Visa Premier — débit |
+| Plafond paiement / 30 j      | 2 000 €              | 10 000 €             |
+| Plafond retrait / 7 j        | 500 €                | 2 000 €              |
+| Plafond virement / opération | 5 000 €              | 50 000 €             |
+| Assurances / assistance      | Non                  | Oui                  |
 
 Le **changement d'offre** est instantané ; les nouveaux plafonds s'appliquent
 immédiatement, la carte existante n'est pas réémise (seuls les plafonds changent).
@@ -94,28 +94,29 @@ immédiatement, la carte existante n'est pas réémise (seuls les plafonds chang
 
 ## 5. Règles de gestion (RG)
 
-| # | Règle |
-|---|---|
-| RG‑01 | Un client doit être identifié (KYC simplifié) avant toute souscription. |
-| RG‑02 | **Un client ne peut détenir qu'UN SEUL compte courant ACTIF à la fois.** |
+| #     | Règle                                                                                                |
+|-------|------------------------------------------------------------------------------------------------------|
+| RG‑01 | Un client doit être identifié (KYC simplifié) avant toute souscription.                              |
+| RG‑02 | **Un client ne peut détenir qu'UN SEUL compte courant ACTIF à la fois.**                             |
 | RG‑03 | Il peut souscrire un nouveau compte **uniquement après clôture** du précédent (historique conservé). |
-| RG‑04 | À la souscription, le client choisit une offre (`EASY` ou `PREMIUM`). |
-| RG‑05 | Une carte ne peut être générée que pour un compte `ACTIVE`. |
-| RG‑06 | Le type de carte est déterminé par l'offre du compte au moment de l'émission. |
-| RG‑07 | Un virement est refusé si solde insuffisant ou plafond dépassé. |
-| RG‑08 | Un virement externe cible obligatoirement un **bénéficiaire enregistré** (IBAN connu). |
-| RG‑09 | Un IBAN/BIC de bénéficiaire est validé (format + clé) avant enregistrement. |
-| RG‑10 | La clôture est refusée si le solde ≠ 0 (régulariser d'abord). |
-| RG‑11 | La clôture désactive les cartes et bénéficiaires associés. |
-| RG‑12 | Un compte `CLOSED` est immuable (lecture seule : RIB historique, relevés). |
-| RG‑13 | Le relevé est mensuel, généré à la demande, au format JSON et PDF. |
-| RG‑14 | Toutes les écritures sont en EUR ; pas de découvert autorisé sur ce POC. |
+| RG‑04 | À la souscription, le client choisit une offre (`EASY` ou `PREMIUM`).                                |
+| RG‑05 | Une carte ne peut être générée que pour un compte `ACTIVE`.                                          |
+| RG‑06 | Le type de carte est déterminé par l'offre du compte au moment de l'émission.                        |
+| RG‑07 | Un virement est refusé si solde insuffisant ou plafond dépassé.                                      |
+| RG‑08 | Un virement externe cible obligatoirement un **bénéficiaire enregistré** (IBAN connu).               |
+| RG‑09 | Un IBAN/BIC de bénéficiaire est validé (format + clé) avant enregistrement.                          |
+| RG‑10 | La clôture est refusée si le solde ≠ 0 (régulariser d'abord).                                        |
+| RG‑11 | La clôture désactive les cartes et bénéficiaires associés.                                           |
+| RG‑12 | Un compte `CLOSED` est immuable (lecture seule : RIB historique, relevés).                           |
+| RG‑13 | Le relevé est mensuel, généré à la demande, au format JSON et PDF.                                   |
+| RG‑14 | Toutes les écritures sont en EUR ; pas de découvert autorisé sur ce POC.                             |
 
 ---
 
 ## 6. Cas d'usage fonctionnels
 
 ### UC‑01 — Souscription à un compte courant
+
 - **Acteur** : client identifié sans compte actif.
 - **Entrées** : `customerId`, offre choisie.
 - **Règles** : RG‑02, RG‑03, RG‑04.
@@ -123,34 +124,41 @@ immédiatement, la carte existante n'est pas réémise (seuls les plafonds chang
 - **Sortie** : compte créé avec IBAN.
 
 ### UC‑02 — Ajouter un bénéficiaire
+
 - **Entrées** : nom, IBAN, BIC du bénéficiaire.
 - **Règles** : RG‑09 (validation IBAN/BIC).
 - **Effets** : bénéficiaire rattaché au compte.
 
 ### UC‑03 — Faire un virement
+
 - **Types** : interne (compte→compte easyBank) ou externe (vers bénéficiaire).
 - **Règles** : RG‑07, RG‑08, plafonds offre.
 - **Effets** : débit émetteur, crédit destinataire, 2 écritures (transaction), statut `EXECUTED`.
 - **Idempotence** : clé `Idempotency-Key` obligatoire (évite le double virement).
 
 ### UC‑04 — Générer une carte bancaire
+
 - **Entrées** : `accountId`.
 - **Règles** : RG‑05, RG‑06.
 - **Effets** : carte créée (PAN, expiration, type selon offre), statut `ACTIVE`.
 - **Sécurité** : CVV non stocké en clair, PAN masqué en réponse (`**** **** **** 1234`).
 
 ### UC‑05 — Changement d'offre
+
 - **Entrées** : nouvelle offre.
 - **Effets** : mise à jour de l'offre et des plafonds (RG‑06 pour future carte).
 
 ### UC‑06 — Clôture de compte
+
 - **Règles** : RG‑10, RG‑11, RG‑12.
 - **Effets** : statut `CLOSED`, cartes/bénéficiaires désactivés ; relevés et RIB restent consultables.
 
 ### UC‑07 — Récupérer le RIB
+
 - **Sortie** : document RIB (titulaire, IBAN, BIC, domiciliation) en JSON et PDF.
 
 ### UC‑08 — Relevé bancaire mensuel
+
 - **Entrées** : mois (`AAAA‑MM`).
 - **Sortie** : liste des opérations + solde initial/final, en JSON et **PDF**.
 
@@ -168,23 +176,25 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 
 ### Énumérations
 
-| Enum | Valeurs |
-|---|---|
-| `AccountStatus` | `ACTIVE`, `CLOSED` |
-| `Offer` | `EASY`, `PREMIUM` |
-| `CardType` | `VISA_CLASSIC`, `VISA_PREMIER` |
-| `CardStatus` | `ACTIVE`, `BLOCKED`, `EXPIRED` |
-| `TransferStatus` | `PENDING`, `EXECUTED`, `REJECTED` |
-| `TransferType` | `INTERNAL`, `EXTERNAL` |
-| `TransactionDirection` | `DEBIT`, `CREDIT` |
+| Enum                   | Valeurs                           |
+|------------------------|-----------------------------------|
+| `AccountStatus`        | `ACTIVE`, `CLOSED`                |
+| `Offer`                | `EASY`, `PREMIUM`                 |
+| `CardType`             | `VISA_CLASSIC`, `VISA_PREMIER`    |
+| `CardStatus`           | `ACTIVE`, `BLOCKED`, `EXPIRED`    |
+| `TransferStatus`       | `PENDING`, `EXECUTED`, `REJECTED` |
+| `TransferType`         | `INTERNAL`, `EXTERNAL`            |
+| `TransactionDirection` | `DEBIT`, `CREDIT`                 |
 
 ### Attributs principaux
 
 **Customer** : `customerId`, `firstName`, `lastName`, `email`, `phone`, `createdAt`.
-**Account** : `accountId`, `customerId`, `iban`, `bic`, `offer`, `balance`, `currency`, `status`, `openedAt`, `closedAt`, `version`.
+**Account** : `accountId`, `customerId`, `iban`, `bic`, `offer`, `balance`, `currency`, `status`, `openedAt`,`closedAt`,
+`version`.
 **Card** : `cardId`, `accountId`, `maskedPan`, `type`, `status`, `expiryDate`.
 **Beneficiary** : `beneficiaryId`, `accountId`, `name`, `iban`, `bic`, `createdAt`.
-**Transfer** : `transferId`, `sourceAccountId`, `targetIban`, `amount`, `currency`, `label`, `type`, `status`, `executedAt`.
+**Transfer** : `transferId`, `sourceAccountId`, `targetIban`, `amount`, `currency`, `label`, `type`, `status`,
+`executedAt`.
 **Transaction** : `transactionId`, `accountId`, `transferId`, `direction`, `amount`, `balanceAfter`, `valueDate`.
 
 > Note conception : `version` (Long) sur `Account` pour le **verrouillage optimiste**
@@ -196,19 +206,19 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 
 ### 8.1 Conventions générales
 
-| Sujet | Choix |
-|---|---|
-| Style | REST, ressources nommées au pluriel |
-| Base URL | `/api/v1` |
-| Format | JSON (`application/json`) ; PDF (`application/pdf`) pour documents |
-| Auth | `Authorization: Bearer <JWT>` (OAuth2) |
-| Idempotence | En‑tête `Idempotency-Key` sur les POST monétaires (virements) |
-| Pagination | `?page=0&size=20` ; réponse enveloppée `{content, page, size, totalElements}` |
-| Tri | `?sort=valueDate,desc` |
-| Dates | ISO‑8601 (`2026-05-31T10:15:30Z`) |
-| Montants | Décimal en EUR (`1500.00`), jamais en float binaire côté métier (`BigDecimal`) |
-| Erreurs | RFC 7807 `application/problem+json` |
-| Versioning | Préfixe d'URL `/v1` |
+| Sujet       | Choix                                                                          |
+|-------------|--------------------------------------------------------------------------------|
+| Style       | REST, ressources nommées au pluriel                                            |
+| Base URL    | `/api/v1`                                                                      |
+| Format      | JSON (`application/json`) ; PDF (`application/pdf`) pour documents             |
+| Auth        | `Authorization: Bearer <JWT>` (OAuth2)                                         |
+| Idempotence | En‑tête `Idempotency-Key` sur les POST monétaires (virements)                  |
+| Pagination  | `?page=0&size=20` ; réponse enveloppée `{content, page, size, totalElements}`  |
+| Tri         | `?sort=valueDate,desc`                                                         |
+| Dates       | ISO‑8601 (`2026-05-31T10:15:30Z`)                                              |
+| Montants    | Décimal en EUR (`1500.00`), jamais en float binaire côté métier (`BigDecimal`) |
+| Erreurs     | RFC 7807 `application/problem+json`                                            |
+| Versioning  | Préfixe d'URL `/v1`                                                            |
 
 ### 8.2 Format d'erreur (RFC 7807)
 
@@ -226,26 +236,26 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 
 ### 8.3 Catalogue des endpoints
 
-| # | Méthode | Endpoint | Description | UC |
-|---|---|---|---|---|
-| 1 | `POST` | `/customers` | Créer un client | — |
-| 2 | `GET` | `/customers/{customerId}` | Détail client | — |
-| 3 | `POST` | `/customers/{customerId}/accounts` | Souscrire un compte courant | UC‑01 |
-| 4 | `GET` | `/customers/{customerId}/accounts` | Lister les comptes du client | — |
-| 5 | `GET` | `/accounts/{accountId}` | Détail d'un compte | — |
-| 6 | `PATCH` | `/accounts/{accountId}/offer` | Changer d'offre | UC‑05 |
-| 7 | `POST` | `/accounts/{accountId}/closure` | Clôturer le compte | UC‑06 |
-| 8 | `POST` | `/accounts/{accountId}/cards` | Générer une carte | UC‑04 |
-| 9 | `GET` | `/accounts/{accountId}/cards` | Lister les cartes | — |
-| 10 | `POST` | `/accounts/{accountId}/beneficiaries` | Ajouter un bénéficiaire | UC‑02 |
-| 11 | `GET` | `/accounts/{accountId}/beneficiaries` | Lister les bénéficiaires | — |
-| 12 | `DELETE` | `/accounts/{accountId}/beneficiaries/{beneficiaryId}` | Supprimer un bénéficiaire | — |
-| 13 | `POST` | `/accounts/{accountId}/transfers` | Émettre un virement | UC‑03 |
-| 14 | `GET` | `/accounts/{accountId}/transfers` | Historique des virements | — |
-| 15 | `GET` | `/accounts/{accountId}/rib` | RIB (JSON) | UC‑07 |
-| 16 | `GET` | `/accounts/{accountId}/rib.pdf` | RIB (PDF) | UC‑07 |
-| 17 | `GET` | `/accounts/{accountId}/statements?month=AAAA-MM` | Relevé mensuel (JSON) | UC‑08 |
-| 18 | `GET` | `/accounts/{accountId}/statements/{AAAA-MM}.pdf` | Relevé mensuel (PDF) | UC‑08 |
+| #  | Méthode  | Endpoint                                              | Description                  | UC    |
+|----|----------|-------------------------------------------------------|------------------------------|-------|
+| 1  | `POST`   | `/customers`                                          | Créer un client              | —     |
+| 2  | `GET`    | `/customers/{customerId}`                             | Détail client                | —     |
+| 3  | `POST`   | `/customers/{customerId}/accounts`                    | Souscrire un compte courant  | UC‑01 |
+| 4  | `GET`    | `/customers/{customerId}/accounts`                    | Lister les comptes du client | —     |
+| 5  | `GET`    | `/accounts/{accountId}`                               | Détail d'un compte           | —     |
+| 6  | `PATCH`  | `/accounts/{accountId}/offer`                         | Changer d'offre              | UC‑05 |
+| 7  | `POST`   | `/accounts/{accountId}/closure`                       | Clôturer le compte           | UC‑06 |
+| 8  | `POST`   | `/accounts/{accountId}/cards`                         | Générer une carte            | UC‑04 |
+| 9  | `GET`    | `/accounts/{accountId}/cards`                         | Lister les cartes            | —     |
+| 10 | `POST`   | `/accounts/{accountId}/beneficiaries`                 | Ajouter un bénéficiaire      | UC‑02 |
+| 11 | `GET`    | `/accounts/{accountId}/beneficiaries`                 | Lister les bénéficiaires     | —     |
+| 12 | `DELETE` | `/accounts/{accountId}/beneficiaries/{beneficiaryId}` | Supprimer un bénéficiaire    | —     |
+| 13 | `POST`   | `/accounts/{accountId}/transfers`                     | Émettre un virement          | UC‑03 |
+| 14 | `GET`    | `/accounts/{accountId}/transfers`                     | Historique des virements     | —     |
+| 15 | `GET`    | `/accounts/{accountId}/rib`                           | RIB (JSON)                   | UC‑07 |
+| 16 | `GET`    | `/accounts/{accountId}/rib.pdf`                       | RIB (PDF)                    | UC‑07 |
+| 17 | `GET`    | `/accounts/{accountId}/statements?month=AAAA-MM`      | Relevé mensuel (JSON)        | UC‑08 |
+| 18 | `GET`    | `/accounts/{accountId}/statements/{AAAA-MM}.pdf`      | Relevé mensuel (PDF)         | UC‑08 |
 
 ---
 
@@ -254,6 +264,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ### 9.1 Créer un client — `POST /customers`
 
 **Requête**
+
 ```json
 {
   "firstName": "Ahmed",
@@ -262,7 +273,9 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "phone": "+33612345678"
 }
 ```
+
 **Réponse `201 Created`** — `Location: /api/v1/customers/{customerId}`
+
 ```json
 {
   "customerId": "2c4a1d90-7e6b-4b6a-9f2d-1a2b3c4d5e6f",
@@ -272,6 +285,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "createdAt": "2026-06-17T09:00:00Z"
 }
 ```
+
 **Erreurs** : `400` (validation), `409 EMAIL_ALREADY_USED`.
 
 ---
@@ -279,10 +293,15 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ### 9.2 Souscrire un compte — `POST /customers/{customerId}/accounts`
 
 **Requête**
+
 ```json
-{ "offer": "EASY" }
+{
+  "offer": "EASY"
+}
 ```
+
 **Réponse `201 Created`**
+
 ```json
 {
   "accountId": "a1b2c3d4-0000-4000-8000-000000000001",
@@ -296,6 +315,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "openedAt": "2026-06-17T09:05:00Z"
 }
 ```
+
 **Erreurs** : `409 ACTIVE_ACCOUNT_EXISTS` (RG‑02), `400 INVALID_OFFER`.
 
 ---
@@ -303,6 +323,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ### 9.3 Ajouter un bénéficiaire — `POST /accounts/{accountId}/beneficiaries`
 
 **Requête**
+
 ```json
 {
   "name": "Sara Lopez",
@@ -310,7 +331,9 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "bic": "PSSTFRPPXXX"
 }
 ```
+
 **Réponse `201 Created`**
+
 ```json
 {
   "beneficiaryId": "be11f1c1-0000-4000-8000-000000000099",
@@ -320,6 +343,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "createdAt": "2026-06-17T09:10:00Z"
 }
 ```
+
 **Erreurs** : `400 INVALID_IBAN` / `INVALID_BIC`, `409 BENEFICIARY_ALREADY_EXISTS`.
 
 ---
@@ -329,6 +353,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 **En‑têtes** : `Idempotency-Key: 9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d`
 
 **Requête**
+
 ```json
 {
   "targetIban": "FR1420041010050500013M02606",
@@ -337,7 +362,9 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "label": "Remboursement déjeuner"
 }
 ```
+
 **Réponse `201 Created`**
+
 ```json
 {
   "transferId": "7f0e2b10-0000-4000-8000-0000000000aa",
@@ -351,7 +378,9 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "executedAt": "2026-06-17T09:15:00Z"
 }
 ```
+
 **Erreurs** :
+
 - `422 INSUFFICIENT_FUNDS` (RG‑07)
 - `422 LIMIT_EXCEEDED` (plafond offre)
 - `404 BENEFICIARY_NOT_FOUND` (RG‑08)
@@ -363,6 +392,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ### 9.5 Générer une carte — `POST /accounts/{accountId}/cards`
 
 **Réponse `201 Created`**
+
 ```json
 {
   "cardId": "ca7d0000-0000-4000-8000-0000000000c1",
@@ -372,6 +402,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "expiryDate": "2030-06"
 }
 ```
+
 > Le PAN complet et le CVV ne sont **jamais** renvoyés par l'API (PCI‑DSS).
 **Erreurs** : `409 ACCOUNT_CLOSED` (RG‑05).
 
@@ -380,9 +411,13 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ### 9.6 Changer d'offre — `PATCH /accounts/{accountId}/offer`
 
 **Requête**
+
 ```json
-{ "offer": "PREMIUM" }
+{
+  "offer": "PREMIUM"
+}
 ```
+
 **Réponse `200 OK`** — compte mis à jour (nouveaux plafonds appliqués).
 **Erreurs** : `400 INVALID_OFFER`, `409 SAME_OFFER`, `409 ACCOUNT_CLOSED`.
 
@@ -391,9 +426,15 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ### 9.7 Clôturer le compte — `POST /accounts/{accountId}/closure`
 
 **Réponse `200 OK`**
+
 ```json
-{ "accountId": "a1b2c3d4-...", "status": "CLOSED", "closedAt": "2026-06-17T09:20:00Z" }
+{
+  "accountId": "a1b2c3d4-...",
+  "status": "CLOSED",
+  "closedAt": "2026-06-17T09:20:00Z"
+}
 ```
+
 **Erreurs** : `422 NON_ZERO_BALANCE` (RG‑10), `409 ALREADY_CLOSED`.
 
 ---
@@ -401,6 +442,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ### 9.8 RIB — `GET /accounts/{accountId}/rib`
 
 **Réponse `200 OK`**
+
 ```json
 {
   "holder": "Ahmed Benali",
@@ -410,6 +452,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   "domiciliation": "EASYBANK PARIS"
 }
 ```
+
 > Variante PDF : `GET /accounts/{accountId}/rib.pdf` → `Content-Type: application/pdf`.
 
 ---
@@ -417,6 +460,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ### 9.9 Relevé mensuel — `GET /accounts/{accountId}/statements?month=2026-05`
 
 **Réponse `200 OK`**
+
 ```json
 {
   "accountId": "a1b2c3d4-...",
@@ -443,6 +487,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
   ]
 }
 ```
+
 > Variante PDF : `GET /accounts/{accountId}/statements/2026-05.pdf`.
 **Erreurs** : `400 INVALID_MONTH`, `404 NO_DATA_FOR_PERIOD`.
 
@@ -450,19 +495,19 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 
 ## 10. Codes d'erreur métier (synthèse)
 
-| Code | HTTP | Sens |
-|---|---|---|
-| `EMAIL_ALREADY_USED` | 409 | E‑mail déjà rattaché à un client |
-| `ACTIVE_ACCOUNT_EXISTS` | 409 | Le client a déjà un compte actif (RG‑02) |
-| `INVALID_OFFER` | 400 | Offre inconnue |
-| `SAME_OFFER` | 409 | Offre identique à l'actuelle |
-| `INVALID_IBAN` / `INVALID_BIC` | 400 | Format/clé invalide |
-| `BENEFICIARY_NOT_FOUND` | 404 | Bénéficiaire absent |
-| `INSUFFICIENT_FUNDS` | 422 | Solde insuffisant |
-| `LIMIT_EXCEEDED` | 422 | Plafond de l'offre dépassé |
-| `ACCOUNT_CLOSED` | 409 | Opération interdite sur compte clôturé |
-| `NON_ZERO_BALANCE` | 422 | Clôture impossible, solde ≠ 0 |
-| `NO_DATA_FOR_PERIOD` | 404 | Aucune opération sur le mois |
+| Code                           | HTTP | Sens                                     |
+|--------------------------------|------|------------------------------------------|
+| `EMAIL_ALREADY_USED`           | 409  | E‑mail déjà rattaché à un client         |
+| `ACTIVE_ACCOUNT_EXISTS`        | 409  | Le client a déjà un compte actif (RG‑02) |
+| `INVALID_OFFER`                | 400  | Offre inconnue                           |
+| `SAME_OFFER`                   | 409  | Offre identique à l'actuelle             |
+| `INVALID_IBAN` / `INVALID_BIC` | 400  | Format/clé invalide                      |
+| `BENEFICIARY_NOT_FOUND`        | 404  | Bénéficiaire absent                      |
+| `INSUFFICIENT_FUNDS`           | 422  | Solde insuffisant                        |
+| `LIMIT_EXCEEDED`               | 422  | Plafond de l'offre dépassé               |
+| `ACCOUNT_CLOSED`               | 409  | Opération interdite sur compte clôturé   |
+| `NON_ZERO_BALANCE`             | 422  | Clôture impossible, solde ≠ 0            |
+| `NO_DATA_FOR_PERIOD`           | 404  | Aucune opération sur le mois             |
 
 ---
 
@@ -473,6 +518,7 @@ Customer 1 ───< Account (1 ACTIVE max) 1 ───< Card
 ```
 cleRIB = 97 − ( (89 × banque + 15 × guichet + 3 × compte) mod 97 )
 ```
+
 Les lettres éventuelles du n° de compte sont converties (A=1 … Z selon table AFNOR)
 avant calcul. Exemple easyBank : banque=30100, guichet=00001, compte=00012345678 → **clé = 22**.
 

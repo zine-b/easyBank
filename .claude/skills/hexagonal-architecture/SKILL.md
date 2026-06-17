@@ -34,18 +34,18 @@ la dépendance via un port.
 
 ## Structure de packages (racine : `com.easybank`)
 
-| Package | Contenu | Dépendances autorisées |
-|---|---|---|
-| `domain.model` | Entités riches (`Account`, `Transfer`, `Card`, `Beneficiary`, `Customer`) | rien |
-| `domain.vo` | Value Objects immuables (`Iban`, `Bic`, `Money`, `Offer`, `AccountId`…) | rien |
-| `domain.exception` | Exceptions métier | rien |
-| `application.port.in` | Ports IN = une interface par use case (+ records `Command`) | `domain` |
-| `application.port.out` | Ports OUT = besoins du métier (`AccountRepository`, `StatementPdfGenerator`…) | `domain` |
-| `application.service` | Implémentations des use cases (orchestration) | `domain`, `application.port` |
-| `infrastructure.adapter.in.web` | Controllers REST + DTO + mappers + `GlobalExceptionHandler` | `application.port.in` |
-| `infrastructure.adapter.out.persistence` | Entités JPA + repositories Spring Data + adapters | `application.port.out` |
-| `infrastructure.adapter.out.pdf` | Génération PDF (relevé, RIB) | `application.port.out` |
-| `infrastructure.config` | Configuration Spring, beans | tout |
+| Package                                  | Contenu                                                                       | Dépendances autorisées       |
+|------------------------------------------|-------------------------------------------------------------------------------|------------------------------|
+| `domain.model`                           | Entités riches (`Account`, `Transfer`, `Card`, `Beneficiary`, `Customer`)     | rien                         |
+| `domain.vo`                              | Value Objects immuables (`Iban`, `Bic`, `Money`, `Offer`, `AccountId`…)       | rien                         |
+| `domain.exception`                       | Exceptions métier                                                             | rien                         |
+| `application.port.in`                    | Ports IN = une interface par use case (+ records `Command`)                   | `domain`                     |
+| `application.port.out`                   | Ports OUT = besoins du métier (`AccountRepository`, `StatementPdfGenerator`…) | `domain`                     |
+| `application.service`                    | Implémentations des use cases (orchestration)                                 | `domain`, `application.port` |
+| `infrastructure.adapter.in.web`          | Controllers REST + DTO + mappers + `GlobalExceptionHandler`                   | `application.port.in`        |
+| `infrastructure.adapter.out.persistence` | Entités JPA + repositories Spring Data + adapters                             | `application.port.out`       |
+| `infrastructure.adapter.out.pdf`         | Génération PDF (relevé, RIB)                                                  | `application.port.out`       |
+| `infrastructure.config`                  | Configuration Spring, beans                                                   | tout                         |
 
 ## Conventions de nommage
 
@@ -90,6 +90,7 @@ la dépendance via un port.
 ## Quand tu crées un nouveau use case
 
 Suis toujours cette séquence (du cœur vers l'extérieur) :
+
 1. Ajoute/complète l'entité et ses règles dans `domain`.
 2. Crée le port IN `<Action>UseCase` + le record `<Action>Command` dans `application.port.in`.
 3. Crée/complète les ports OUT nécessaires dans `application.port.out`.
