@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp /Users/marrichazineb/Downloads/easy-bank-backend/api/src/main/java/com/easy/bank/api/port/in/*.java /Users/marrichazineb/Downloads/easy-bank-backend/domain/src/main/java/com/easy/bank/domain/port/in/)",
+      "Bash(cp /Users/marrichazineb/Downloads/easy-bank-backend/api/src/main/java/com/easy/bank/api/port/in/command/*.java /Users/marrichazineb/Downloads/easy-bank-backend/domain/src/main/java/com/easy/bank/domain/port/in/command/)",
+      "Bash(cp /Users/marrichazineb/Downloads/easy-bank-backend/api/src/main/java/com/easy/bank/api/port/out/*.java /Users/marrichazineb/Downloads/easy-bank-backend/domain/src/main/java/com/easy/bank/domain/port/out/)"
+    ]
+  }
+}
