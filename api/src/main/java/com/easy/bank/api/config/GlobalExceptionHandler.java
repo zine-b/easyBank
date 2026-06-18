@@ -1,4 +1,4 @@
-package com.easy.bank.api.controller;
+package com.easy.bank.api.config;
 
 import com.easy.bank.domain.exception.CustomerNotFoundException;
 import com.easy.bank.domain.exception.EmailAlreadyUsedException;
