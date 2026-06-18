@@ -1,5 +1,6 @@
 package com.easy.bank.api.controller;
 
+import com.easy.bank.domain.exception.CustomerNotFoundException;
 import com.easy.bank.domain.exception.EmailAlreadyUsedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -21,6 +22,15 @@ public class GlobalExceptionHandler {
         problem.setProperty("code", "EMAIL_ALREADY_USED");
         problem.setProperty("timestamp", Instant.now().toString());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(problem);
+    }
+
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<ProblemDetail> handleCustomerNotFound(CustomerNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Customer Not Found");
+        problem.setProperty("code", "CUSTOMER_NOT_FOUND");
+        problem.setProperty("timestamp", Instant.now().toString());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problem);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

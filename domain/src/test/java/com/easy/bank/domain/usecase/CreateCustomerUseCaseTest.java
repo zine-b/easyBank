@@ -7,6 +7,7 @@ import com.easy.bank.domain.port.CustomerRepositoryPort;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -19,9 +20,9 @@ class CreateCustomerUseCaseTest {
 
         CreateCustomerCommand command = new CreateCustomerCommand(
                 "firstname",
-                "",
-                "",
-                "",
+                "lastName",
+                "email",
+                "phone",
                 "65afe100509a66f663f37114114d6d98a39623e9d14c66eb5a29ffd317fd858c"
         );
         Customer customer = createCustomerUseCase.createCustomer(command);
@@ -32,6 +33,11 @@ class CreateCustomerUseCaseTest {
 
     private static CustomerRepositoryPort getCustomerRepositoryPort() {
         return new CustomerRepositoryPort() {
+            @Override
+            public List<Customer> findAll() {
+                return List.of();
+            }
+
             @Override
             public Optional<Customer> findById(CustomerId id) {
                 return Optional.empty();

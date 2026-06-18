@@ -5,6 +5,7 @@ import com.easy.bank.domain.port.CustomerRepositoryPort;
 import com.easy.bank.domain.model.Customer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -14,6 +15,13 @@ class CustomerPersistenceAdapterPort implements CustomerRepositoryPort {
 
     CustomerPersistenceAdapterPort(SpringDataCustomerRepository springDataRepository) {
         this.springDataRepository = springDataRepository;
+    }
+
+    @Override
+    public List<Customer> findAll() {
+        return springDataRepository.findAll().stream()
+                .map(this::toDomain)
+                .toList();
     }
 
     @Override

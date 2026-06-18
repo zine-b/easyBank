@@ -11,7 +11,8 @@ public record CreateCustomerRequest(
         @Schema(description = "Nom de famille", example = "Benali") @NotBlank String lastName,
         @Schema(description = "Adresse e-mail unique", example = "ahmed.benali@example.com") @Email @NotBlank String email,
         @Schema(description = "Numéro de téléphone (10 à 15 chiffres, + en option)", example = "+33612345678")
-        String passwordHash,
-        @Pattern(regexp = "\\+?[0-9]{10,15}", message = "Invalid phone format") String phone
+        @Pattern(regexp = "\\+?[0-9]{10,15}", message = "Invalid phone format") String phone,
+        @Schema(example = "65afe100509a66f663f37114114d6d98a39623e9d14c66eb5a29ffd317fd858c")
+        String passwordHash
 ) {
 }
